@@ -3,10 +3,15 @@ import type { Filters, Vacancy } from "./types/vacancy";
 import FilterSidebar from "./components/FilterSidebar";
 import VacancyList from "./components/VacancyList";
 import { parseProgramStudi } from "./utils/parse";
+import { Button } from "./components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const ITEMS_PER_PAGE = 10; // Jumlah item per halaman
 
 const App = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<Filters>({
     q: "",
     province: "",
@@ -54,16 +59,23 @@ const App = () => {
     });
   }, [vacancies, filters]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedItems = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">Katalog Lowongan</h1>
-          {/* <nav className="hidden md:flex gap-4 text-sm text-slate-600">
-            <a href="#">Home</a>
-            <a href="#">Lowongan</a>
-            <a href="#">Tentang</a>
-          </nav> */}
           <div className="text-sm text-black/50">
             <p>Update data : 2025/10/10 20.22</p>
           </div>
@@ -88,7 +100,36 @@ const App = () => {
           {loading ? (
             <div className="p-6 text-center">Memuat data...</div>
           ) : (
-            <VacancyList items={filtered} />
+            <>
+              <VacancyList items={paginatedItems} />
+
+              {/* Pagination Controls */}
+              <div className="mt-6 flex items-center justify-between">
+                <div className="text-sm text-slate-600">
+                  Halaman {currentPage} dari {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </section>
       </main>
