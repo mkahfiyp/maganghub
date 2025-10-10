@@ -14,6 +14,7 @@ export interface Company {
 
 export interface Schedule {
     tanggal_batas_pendaftaran?: string;
+    tanggal_pendaftaran_akhir?: string;
     tanggal_mulai?: string;
 }
 

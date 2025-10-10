@@ -6,7 +6,7 @@ import { parseProgramStudi } from "./utils/parse";
 import { Button } from "./components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ITEMS_PER_PAGE = 10; // Jumlah item per halaman
+const ITEMS_PER_PAGE = 21; // Jumlah item per halaman
 
 const App = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -73,11 +73,11 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">Katalog Lowongan</h1>
           <div className="text-sm text-black/50">
-            <p>Update data : 2025/10/10 20.22</p>
+            <p>Update data : 2025/10/11 00.15</p>
           </div>
         </div>
       </header>

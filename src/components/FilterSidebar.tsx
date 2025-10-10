@@ -61,7 +61,7 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
     }, [filters]);
 
     return (
-        <aside className="p-4 bg-white rounded-xl shadow-sm sticky top-4 h-fit overflow-auto">
+        <aside className="p-4 bg-white rounded-xl shadow-sm sticky top-19 h-fit overflow-auto">
             <h4 className="font-semibold mb-3">Filter Lowongan</h4>
 
             <label className="block text-xs mb-1">Cari posisi</label>

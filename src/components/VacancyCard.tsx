@@ -1,6 +1,7 @@
 import React from "react";
 import type { Vacancy } from "../types/vacancy";
 import { parseProgramStudi } from "../utils/parse";
+import { Button } from "./ui/button";
 
 interface Props {
     vacancy: Vacancy;
@@ -42,7 +43,7 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
                 <div><b>Pendaftar:</b> {vacancy.jumlah_terdaftar ?? 0}</div>
                 <div><b>Provinsi:</b> {company?.nama_provinsi ?? "-"}</div>
                 <div><b>Kota/Kab:</b> {company?.nama_kabupaten ?? "-"}</div>
-                <div><b>Batas daftar:</b> {jadwal?.tanggal_batas_pendaftaran ? new Date(jadwal.tanggal_batas_pendaftaran).toLocaleDateString() : "-"}</div>
+                <div><b>Batas daftar:</b> {jadwal?.tanggal_pendaftaran_akhir ? new Date(jadwal.tanggal_pendaftaran_akhir).toLocaleDateString() : "-"}</div>
             </div>
 
             {programList.length > 0 && (
@@ -62,6 +63,12 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
                     )}
                 </div>
             )}
+
+            <div className="pt-3">
+                <Button className="w-full" onClick={() => window.open(`https://maganghub.kemnaker.go.id/lowongan/view/${vacancy.id_posisi}`, "_blank")}>
+                    Detail
+                </Button>
+            </div>
         </article>
     );
 };
