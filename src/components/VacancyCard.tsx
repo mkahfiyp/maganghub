@@ -2,6 +2,7 @@ import React from "react";
 import type { Vacancy } from "../types/vacancy";
 import { parseProgramStudi } from "../utils/parse";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 interface Props {
     vacancy: Vacancy;
@@ -65,9 +66,12 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
             )}
 
             <div className="pt-3">
-                <Button className="w-full" onClick={() => window.open(`https://maganghub.kemnaker.go.id/lowongan/view/${vacancy.id_posisi}`, "_blank")}>
-                    Detail
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 py-2.5" onClick={() => window.open(`https://maganghub.kemnaker.go.id/lowongan/view/${vacancy.id_posisi}`, "_blank")}>
+                    Lihat Detail
                 </Button>
+            </div>
+            <div className="pt-3 flex justify-end">
+                <Badge variant={"outline"} className="text-xs bg-green-600 text-white font-bold">Change : {vacancy.jumlah_kuota && vacancy.jumlah_terdaftar ? `${(vacancy.jumlah_kuota / vacancy.jumlah_terdaftar * 100).toFixed(2)}%` : "-"}</Badge>
             </div>
         </article>
     );
