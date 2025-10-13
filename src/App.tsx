@@ -77,7 +77,7 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">Katalog Lowongan</h1>
           <div className="text-sm text-black/50">
-            <p>Update data : 2025/10/12 22.10</p>
+            <p>Update data : 2025/10/14 01.45</p>
           </div>
         </div>
       </header>
