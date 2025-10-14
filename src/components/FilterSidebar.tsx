@@ -3,6 +3,7 @@ import type { Filters, Vacancy } from "../types/vacancy";
 import { parseProgramStudi } from "../utils/parse";
 import FilterSelect from "./FilterSelect";
 import { Button } from "./ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface Props {
     vacancies: Vacancy[];
@@ -116,6 +117,69 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                 >
                     Cari
                 </Button>
+            </div>
+            <div className="mt-5 space-y-1">
+                <p className="text-sm text-slate-600">Urutkan:</p>
+                <div className="flex overflow-hidden w-full gap-2">
+                    <Button
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            sortBy: prev.sortBy === "jumlah_terdaftar_asc" ? "" : "jumlah_terdaftar_asc"
+                        }))}
+                        variant={filters.sortBy !== "jumlah_terdaftar_asc" ? "outline" : "default"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "jumlah_terdaftar_asc"
+                            && "bg-blue-100 text-blue-700 hover:bg-blue-50 border"
+                            // : "bg-slate-100 hover:bg-slate-50 text-black"
+                            }`}
+                    >
+                        <ChevronUp className="h-3 w-3" />
+                        Pendaftar
+                    </Button>
+                    <Button
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            sortBy: prev.sortBy === "jumlah_terdaftar_desc" ? "" : "jumlah_terdaftar_desc"
+                        }))}
+                        variant={filters.sortBy !== "jumlah_terdaftar_desc" ? "outline" : "default"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "jumlah_terdaftar_desc"
+                            && "bg-blue-100 text-blue-700 hover:bg-blue-50 border"
+                            // : "bg-slate-100 hover:bg-slate-50 text-black"
+                            }`}
+                    >
+                        <ChevronDown className="h-3 w-3" />
+                        Pendaftar
+                    </Button>
+                </div>
+                <div className="flex overflow-hidden w-full gap-2">
+                    <Button
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            sortBy: prev.sortBy === "change_asc" ? "" : "change_asc"
+                        }))}
+                        variant={filters.sortBy === "change_asc" ? "default" : "outline"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "change_asc"
+                            && "bg-green-100 text-green-700 hover:bg-green-50 border"
+                            // : "bg-slate-100 hover:bg-slate-50 text-black"
+                            }`}
+                    >
+                        <ChevronUp className="h-3 w-3" />
+                        Change
+                    </Button>
+                    <Button
+                        onClick={() => setFilters(prev => ({
+                            ...prev,
+                            sortBy: prev.sortBy === "change_desc" ? "" : "change_desc"
+                        }))}
+                        variant={filters.sortBy === "change_desc" ? "default" : "outline"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "change_desc"
+                            && "bg-green-100 text-green-700 hover:bg-green-50 border"
+                            // : "bg-slate-100 hover:bg-slate-50 text-black"
+                            }`}
+                    >
+                        <ChevronDown className="h-3 w-3" />
+                        Change
+                    </Button>
+                </div>
             </div>
         </aside>
     );

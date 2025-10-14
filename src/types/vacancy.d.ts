@@ -35,4 +35,5 @@ export interface Filters {
     company: string;
     program: string;
     kota: string;
+    sortBy?: string;
 }

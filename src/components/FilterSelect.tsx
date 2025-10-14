@@ -56,12 +56,13 @@ export default function FilterSelect({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        // className="w-full justify-between text-sm h-10"
                         className="w-full justify-between text-sm h-10"
                         ref={triggerRef}
                     >
-                        {value ? value : placeholder ?? `Pilih ${label.toLowerCase()}...`}
-                        <ChevronsUpDown className="opacity-50 ml-2" />
+                        <span className="truncate flex-1 text-left">
+                            {value ? value : placeholder ?? `Pilih ${label.toLowerCase()}`}
+                        </span>
+                        <ChevronsUpDown className="opacity-50 ml-2 flex-shrink-0" />
                     </Button>
                 </PopoverTrigger>
 

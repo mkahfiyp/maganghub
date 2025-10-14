@@ -18,6 +18,7 @@ const App = () => {
     company: "",
     program: "",
     kota: "",
+    sortBy: "",
   });
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const App = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    return vacancies.filter((v) => {
+    let result = vacancies.filter((v) => {
       const q = filters.q.toLowerCase();
       const programs = parseProgramStudi(v.program_studi).map((p) =>
         p.title.toLowerCase()
@@ -57,6 +58,27 @@ const App = () => {
         return false;
       return true;
     });
+    if (filters.sortBy === "jumlah_terdaftar_asc") {
+      result.sort((a, b) => (a.jumlah_terdaftar || 0) - (b.jumlah_terdaftar || 0));
+    } else if (filters.sortBy === "jumlah_terdaftar_desc") {
+      result.sort((a, b) => (b.jumlah_terdaftar || 0) - (a.jumlah_terdaftar || 0));
+    }
+
+    if (filters.sortBy === "change_asc") {
+      result.sort((a, b) => {
+        const ratioA = a.jumlah_kuota && a.jumlah_terdaftar ? (a.jumlah_kuota / a.jumlah_terdaftar) : 0;
+        const ratioB = b.jumlah_kuota && b.jumlah_terdaftar ? (b.jumlah_kuota / b.jumlah_terdaftar) : 0;
+        return ratioA - ratioB;
+      });
+    } else if (filters.sortBy === "change_desc") {
+      result.sort((a, b) => {
+        const ratioA = a.jumlah_kuota && a.jumlah_terdaftar ? (a.jumlah_kuota / a.jumlah_terdaftar) : 0;
+        const ratioB = b.jumlah_kuota && b.jumlah_terdaftar ? (b.jumlah_kuota / b.jumlah_terdaftar) : 0;
+        return ratioB - ratioA;
+      });
+    }
+
+    return result;
   }, [vacancies, filters]);
 
   // Pagination logic
@@ -77,7 +99,7 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">Katalog Lowongan</h1>
           <div className="text-sm text-black/50">
-            <p>Update data : 2025/10/14 01.45</p>
+            <p>Update data : 2025/10/15 02.19</p>
           </div>
         </div>
       </header>
