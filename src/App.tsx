@@ -64,13 +64,13 @@ const App = () => {
       result.sort((a, b) => (b.jumlah_terdaftar || 0) - (a.jumlah_terdaftar || 0));
     }
 
-    if (filters.sortBy === "change_asc") {
+    if (filters.sortBy === "chance_asc") {
       result.sort((a, b) => {
         const ratioA = a.jumlah_kuota && a.jumlah_terdaftar ? (a.jumlah_kuota / a.jumlah_terdaftar) : 0;
         const ratioB = b.jumlah_kuota && b.jumlah_terdaftar ? (b.jumlah_kuota / b.jumlah_terdaftar) : 0;
         return ratioA - ratioB;
       });
-    } else if (filters.sortBy === "change_desc") {
+    } else if (filters.sortBy === "chance_desc") {
       result.sort((a, b) => {
         const ratioA = a.jumlah_kuota && a.jumlah_terdaftar ? (a.jumlah_kuota / a.jumlah_terdaftar) : 0;
         const ratioB = b.jumlah_kuota && b.jumlah_terdaftar ? (b.jumlah_kuota / b.jumlah_terdaftar) : 0;

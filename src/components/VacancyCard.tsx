@@ -71,7 +71,7 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
                 </Button>
             </div>
             <div className="pt-3 flex justify-end">
-                <Badge variant={"outline"} className="text-xs bg-green-600 text-white font-bold">Change : {vacancy.jumlah_kuota && vacancy.jumlah_terdaftar ? `${(vacancy.jumlah_kuota / vacancy.jumlah_terdaftar * 100).toFixed(2)}%` : "-"}</Badge>
+                <Badge variant={"outline"} className="text-xs bg-green-600 text-white font-bold">Chance : {vacancy.jumlah_kuota && vacancy.jumlah_terdaftar ? `${(vacancy.jumlah_kuota / vacancy.jumlah_terdaftar * 100).toFixed(2)}%` : "-"}</Badge>
             </div>
         </article>
     );

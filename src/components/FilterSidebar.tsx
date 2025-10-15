@@ -154,30 +154,30 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                     <Button
                         onClick={() => setFilters(prev => ({
                             ...prev,
-                            sortBy: prev.sortBy === "change_asc" ? "" : "change_asc"
+                            sortBy: prev.sortBy === "chance_asc" ? "" : "chance_asc"
                         }))}
-                        variant={filters.sortBy === "change_asc" ? "default" : "outline"}
-                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "change_asc"
+                        variant={filters.sortBy === "chance_asc" ? "default" : "outline"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "chance_asc"
                             && "bg-green-100 text-green-700 hover:bg-green-50 border"
                             // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronUp className="h-3 w-3" />
-                        Change
+                        Chance
                     </Button>
                     <Button
                         onClick={() => setFilters(prev => ({
                             ...prev,
-                            sortBy: prev.sortBy === "change_desc" ? "" : "change_desc"
+                            sortBy: prev.sortBy === "chance_desc" ? "" : "chance_desc"
                         }))}
-                        variant={filters.sortBy === "change_desc" ? "default" : "outline"}
-                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "change_desc"
+                        variant={filters.sortBy === "chance_desc" ? "default" : "outline"}
+                        className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "chance_desc"
                             && "bg-green-100 text-green-700 hover:bg-green-50 border"
                             // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronDown className="h-3 w-3" />
-                        Change
+                        Chance
                     </Button>
                 </div>
             </div>
