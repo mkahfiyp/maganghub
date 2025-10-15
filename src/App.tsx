@@ -97,7 +97,7 @@ const App = () => {
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white shadow-sm sticky top-0">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Kontol kagak percaya</h1>
+          <h1 className="text-lg font-semibold">Lowongan</h1>
           <div className="text-sm text-black/50">
             <p>Update data : 2025/10/15 17.08</p>
           </div>
