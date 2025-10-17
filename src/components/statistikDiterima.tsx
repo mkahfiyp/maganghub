@@ -62,7 +62,7 @@ const StatistikDiterima: React.FC = () => {
         // Set interval untuk call API setiap menit (60000ms)
         const apiInterval = setInterval(() => {
             fetchStatistik();
-        }, 60000);
+        }, 600000);
 
         // Set interval untuk update jam setiap detik (1000ms)
         const timeInterval = setInterval(() => {
@@ -152,7 +152,7 @@ const StatistikDiterima: React.FC = () => {
                 </div>
 
                 <div className="mt-6 text-center text-sm text-gray-500">
-                    Data diperbarui setiap menit
+                    Data diperbarui setiap 10 menit
                 </div>
             </div>
         </div>
