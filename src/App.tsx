@@ -5,6 +5,7 @@ import VacancyList from "./components/VacancyList";
 import { parseProgramStudi } from "./utils/parse";
 import { Button } from "./components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import StatistikDiterima from "./components/statistikDiterima";
 
 const ITEMS_PER_PAGE = 21; // Jumlah item per halaman
 
@@ -104,6 +105,8 @@ const App = () => {
         </div>
       </header>
 
+      <StatistikDiterima />
+      
       <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
         <FilterSidebar
           vacancies={vacancies}
