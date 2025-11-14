@@ -1,14 +1,14 @@
-type CompressionMode = 'standard' | 'aggressive';
+// type CompressionMode = 'standard' | 'aggressive';
 
-interface CompressionResult {
-    compressed: string;
-    stats: {
-        original: number;
-        compressed: number;
-        saved: number;
-        percent: string;
-    };
-}
+// interface CompressionResult {
+//     compressed: string;
+//     stats: {
+//         original: number;
+//         compressed: number;
+//         saved: number;
+//         percent: string;
+//     };
+// }
 
 // Standard compression: hapus whitespace saja
 function standardCompress(data: string): string {
