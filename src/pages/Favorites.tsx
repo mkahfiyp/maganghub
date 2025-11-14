@@ -5,15 +5,32 @@ import VacancyList from "../components/VacancyList";
 import { Button } from "../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { decompressJson } from "../utils/decompress";
+
+// Helper: normalisasi struktur data hasil dekompresi
+function getDataArray(raw: any): Vacancy[] {
+  if (!raw) return [];
+  const d = raw.data ?? raw;
+  if (Array.isArray(d)) return d as Vacancy[];
+  if (d && Array.isArray(d.data)) return d.data as Vacancy[];
+  if (d && typeof d === "object") {
+    for (const v of Object.values(d)) {
+      if (Array.isArray(v)) return v as Vacancy[];
+    }
+  }
+  return [];
+}
 
 const Favorites = () => {
   const { favorites } = useFavorites();
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<string>(""); // Tambahkan state untuk sortBy
+  const [sortBy, setSortBy] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       try {
         if (favorites.length === 0) {
@@ -22,43 +39,86 @@ const Favorites = () => {
           return;
         }
 
+        setLoading(true);
+
+        // Load data lokal sebagai fallback
+        let localData: Vacancy[] = [];
+        try {
+          const res = await fetch("/vacancies-aktif.json");
+          const json = await res.json();
+          const decompressed = decompressJson(json);
+          localData = getDataArray(decompressed);
+        } catch (e) {
+          console.error("Gagal memuat data lokal:", e);
+        }
+
         // Fetch setiap vacancy berdasarkan id favorit
         const fetchPromises = favorites.map(async (id) => {
           try {
             const res = await fetch(
-              `https://maganghub.kemnaker.go.id/be/v1/api/read/vacancies-aktif/${id}?order_direction=ASC&page=1&limit=10`
+              `https://maganghub.kemnaker.go.id/be/v1/api/read/vacancies-aktif/${id}?order_direction=ASC&page=1&limit=10`,
+              { signal: AbortSignal.timeout(5000) } // 5 detik timeout
             );
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
             const json = await res.json();
-            return json.data?.[0] || null;
+            const fromApi = json.data?.[0] || null;
+
+            if (fromApi) return fromApi as Vacancy;
+
+            // Jika API tidak return data, coba dari lokal
+            throw new Error("No data from API");
           } catch (error) {
-            console.error(`Error fetching vacancy ${id}:`, error);
-            return null;
+            console.warn(`API gagal untuk id ${id}, menggunakan data lokal:`, error);
+
+            // Fallback ke data lokal
+            const fromLocal = localData.find((v) => v.id_posisi === id) || null;
+            return fromLocal;
           }
         });
 
         const results = await Promise.all(fetchPromises);
         const favoriteVacancies = results.filter((v): v is Vacancy => v !== null);
 
-        setVacancies(favoriteVacancies);
+        if (!cancelled) {
+          setVacancies(favoriteVacancies);
+        }
       } catch (e) {
         console.error(e);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [favorites]);
 
-  // Sort berdasarkan chance
-  const sortedVacancies = vacancies.sort((a, b) => {
-    const chanceA = a.jumlah_kuota && a.jumlah_terdaftar ? (a.jumlah_kuota / a.jumlah_terdaftar) : 0;
-    const chanceB = b.jumlah_kuota && b.jumlah_terdaftar ? (b.jumlah_kuota / b.jumlah_terdaftar) : 0;
+  // Sort berdasarkan chance (gunakan copy agar tidak mutate state)
+  const sortedVacancies = [...vacancies].sort((a, b) => {
+    const chanceA =
+      a.jumlah_kuota && a.jumlah_terdaftar
+        ? a.jumlah_terdaftar === 0
+          ? Number.POSITIVE_INFINITY
+          : a.jumlah_kuota / a.jumlah_terdaftar
+        : 0;
+    const chanceB =
+      b.jumlah_kuota && b.jumlah_terdaftar
+        ? b.jumlah_terdaftar === 0
+          ? Number.POSITIVE_INFINITY
+          : b.jumlah_kuota / b.jumlah_terdaftar
+        : 0;
 
     if (sortBy === "chance_asc") {
       return chanceA - chanceB;
     } else if (sortBy === "chance_desc") {
       return chanceB - chanceA;
     }
-    return 0; // Tidak ada pengurutan
+    return 0;
   });
 
   return (
