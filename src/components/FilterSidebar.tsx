@@ -36,23 +36,24 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
         const s = new Set<string>();
         vacancies.forEach((v) => v.perusahaan?.nama_kabupaten && s.add(v.perusahaan.nama_kabupaten));
         return Array.from(s).sort();
-    }, [vacancies])
-
-    // const update = (key: keyof Filters, value: string) =>
-    //     setFilters((prev) => ({ ...prev, [key]: value }));
-
-    // const reset = () =>
-    //     setFilters({ q: "", province: "", company: "", program: "", kota: "" });
+    }, [vacancies]);
 
     const [localFilters, setLocalFilters] = useState<Filters>(filters);
 
-    const updateLocal = (key: keyof Filters, value: string) =>
+    const updateLocal = (key: keyof Filters, value: string | string[]) =>
         setLocalFilters((prev) => ({ ...prev, [key]: value }));
 
     const applyFilter = () => setFilters(localFilters);
 
     const reset = () => {
-        const empty = { q: "", province: "", company: "", program: "", kota: "" };
+        const empty: Filters = {
+            q: "",
+            province: [],
+            company: [],
+            program: [],
+            kota: [],
+            sortBy: ""
+        };
         setLocalFilters(empty);
         setFilters(empty);
     };
@@ -103,15 +104,12 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                 <Button
                     variant={"destructive"}
                     onClick={reset}
-                    // className="mt-5 w-full border rounded py-2 text-sm hover:bg-slate-50"
-                    // className="flex-1 border rounded py-2 text-sm hover:bg-slate-50"
                     className="flex-1 border py-2 text-sm"
                 >
                     Reset
                 </Button>
                 <Button
                     type="submit"
-                    // className="flex-1 bg-blue-600 text-white rounded py-2 text-sm hover:bg-blue-700"
                     className="flex-1 bg-blue-600 text-white py-2 text-sm hover:bg-blue-700"
                     onClick={(e) => { e.preventDefault(); applyFilter(); }}
                 >
@@ -129,7 +127,6 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                         variant={filters.sortBy !== "jumlah_terdaftar_asc" ? "outline" : "default"}
                         className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "jumlah_terdaftar_asc"
                             && "bg-blue-100 text-blue-700 hover:bg-blue-50 border"
-                            // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronUp className="h-3 w-3" />
@@ -143,7 +140,6 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                         variant={filters.sortBy !== "jumlah_terdaftar_desc" ? "outline" : "default"}
                         className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "jumlah_terdaftar_desc"
                             && "bg-blue-100 text-blue-700 hover:bg-blue-50 border"
-                            // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronDown className="h-3 w-3" />
@@ -159,7 +155,6 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                         variant={filters.sortBy === "chance_asc" ? "default" : "outline"}
                         className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "chance_asc"
                             && "bg-green-100 text-green-700 hover:bg-green-50 border"
-                            // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronUp className="h-3 w-3" />
@@ -173,7 +168,6 @@ const FilterSidebar: React.FC<Props> = ({ vacancies, filters, setFilters }) => {
                         variant={filters.sortBy === "chance_desc" ? "default" : "outline"}
                         className={`flex-1 px-3 py-1 rounded-none text-sm flex items-center gap-1 ${filters.sortBy === "chance_desc"
                             && "bg-green-100 text-green-700 hover:bg-green-50 border"
-                            // : "bg-slate-100 hover:bg-slate-50 text-black"
                             }`}
                     >
                         <ChevronDown className="h-3 w-3" />

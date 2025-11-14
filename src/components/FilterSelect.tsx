@@ -3,7 +3,7 @@ import {
     Popover,
     PopoverTrigger,
     PopoverContent,
-} from "@/components/ui/popover"; // sesuaikan path jika berbeda
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -13,12 +13,13 @@ import {
     CommandGroup,
     CommandItem,
 } from "@/components/ui/command";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
     label: string;
-    value: string;
-    onChange: (val: string) => void;
+    value: string[];  // Ubah jadi array
+    onChange: (val: string[]) => void;  // Ubah jadi array
     options: string[];
     placeholder?: string;
 };
@@ -46,6 +47,19 @@ export default function FilterSelect({
         return () => window.removeEventListener("resize", measure);
     }, [open, items]);
 
+    const toggleValue = (val: string) => {
+        if (value.includes(val)) {
+            onChange(value.filter(v => v !== val));
+        } else {
+            onChange([...value, val]);
+        }
+    };
+
+    const removeValue = (val: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange(value.filter(v => v !== val));
+    };
+
     return (
         <div className="mt-4">
             <label className="block text-xs mb-1">{label}</label>
@@ -56,13 +70,31 @@ export default function FilterSelect({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between text-sm h-10"
+                        className="w-full justify-between text-sm h-auto min-h-10 py-2"
                         ref={triggerRef}
                     >
-                        <span className="truncate flex-1 text-left">
-                            {value ? value : placeholder ?? `Pilih ${label.toLowerCase()}`}
-                        </span>
-                        <ChevronsUpDown className="opacity-50 ml-2 flex-shrink-0" />
+                        <div className="flex flex-wrap gap-1 flex-1 text-left">
+                            {value.length === 0 ? (
+                                <span className="text-muted-foreground">
+                                    {placeholder ?? `Pilih ${label.toLowerCase()}`}
+                                </span>
+                            ) : (
+                                value.map((v) => (
+                                    <Badge
+                                        key={v}
+                                        variant="secondary"
+                                        className="text-xs px-2 py-0"
+                                    >
+                                        {v}
+                                        <X
+                                            className="ml-1 h-3 w-3 cursor-pointer"
+                                            onClick={(e) => removeValue(v, e)}
+                                        />
+                                    </Badge>
+                                ))
+                            )}
+                        </div>
+                        <ChevronsUpDown className="opacity-50 ml-2 flex-shrink-0 h-4 w-4" />
                     </Button>
                 </PopoverTrigger>
 
@@ -77,30 +109,29 @@ export default function FilterSelect({
 
                             <CommandGroup>
                                 <CommandItem
-                                    value=""
-                                    onSelect={(currentValue) => {
-                                        onChange(currentValue === value ? "" : currentValue);
+                                    onSelect={() => {
+                                        onChange([]);
                                         setOpen(false);
                                     }}
                                 >
                                     <div className="flex w-full items-center justify-between">
-                                        <span className={(value === "" ? "font-semibold" : "")}>Semua</span>
-                                        <Check className={(value === "" ? "opacity-100" : "opacity-0")} />
+                                        <span className={value.length === 0 ? "font-semibold" : ""}>
+                                            Semua
+                                        </span>
+                                        <Check className={value.length === 0 ? "opacity-100" : "opacity-0"} />
                                     </div>
                                 </CommandItem>
 
                                 {items.map((opt) => (
                                     <CommandItem
                                         key={opt}
-                                        value={opt}
-                                        onSelect={(currentValue) => {
-                                            onChange(currentValue === value ? "" : currentValue);
-                                            setOpen(false);
-                                        }}
+                                        onSelect={() => toggleValue(opt)}
                                     >
                                         <div className="flex w-full items-center justify-between">
-                                            <span className={(value === opt ? "font-semibold" : "")}>{opt}</span>
-                                            <Check className={(value === opt ? "opacity-100" : "opacity-0")} />
+                                            <span className={value.includes(opt) ? "font-semibold" : ""}>
+                                                {opt}
+                                            </span>
+                                            <Check className={value.includes(opt) ? "opacity-100" : "opacity-0"} />
                                         </div>
                                     </CommandItem>
                                 ))}

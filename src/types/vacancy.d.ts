@@ -25,15 +25,16 @@ export interface Vacancy {
     jumlah_kuota?: number;
     jumlah_terdaftar?: number;
     program_studi?: string | ProgramStudy[];
+    // program_studi?: string;
     perusahaan?: Company;
     jadwal?: Schedule;
 }
 
 export interface Filters {
     q: string;
-    province: string;
-    company: string;
-    program: string;
-    kota: string;
+    province: string[];
+    company: string[];
+    program: string[];
+    kota: string[];
     sortBy?: string;
 }

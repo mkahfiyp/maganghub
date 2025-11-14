@@ -3,6 +3,9 @@ import type { Vacancy } from "../types/vacancy";
 import { parseProgramStudi } from "../utils/parse";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "./ui/hover-card";
+import { Heart } from "lucide-react";
+import { useFavorites } from "../contexts/FavoritesContext";
 
 interface Props {
     vacancy: Vacancy;
@@ -12,9 +15,25 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
     const company = vacancy.perusahaan;
     const jadwal = vacancy.jadwal;
     const programList = parseProgramStudi(vacancy.program_studi);
+    const { isFavorite, toggleFavorite } = useFavorites();
 
     return (
-        <article className="bg-white rounded-2xl shadow-sm hover:shadow-md transition p-4 flex flex-col h-full">
+        <article className="bg-white rounded-2xl shadow-sm hover:shadow-md transition p-4 flex flex-col h-full relative">
+            {/* Tombol Favorit */}
+            <button
+                onClick={() => toggleFavorite(vacancy.id_posisi)}
+                className="absolute top-4 right-4 z-10 p-2 hover:bg-gray-100 rounded-full transition"
+                aria-label="Toggle favorite"
+            >
+                <Heart
+                    className={`h-5 w-5 ${
+                        isFavorite(vacancy.id_posisi)
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-400"
+                    }`}
+                />
+            </button>
+
             <header className="flex items-center gap-3 mb-3">
                 <div className="w-14 h-14 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
                     {company?.logo ? (
@@ -29,15 +48,27 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
                         </div>
                     )}
                 </div>
-                <div>
+                <div className="flex-1 pr-8">
                     <h3 className="text-sm font-semibold">{vacancy.posisi}</h3>
                     <p className="text-xs text-gray-500">{company?.nama_perusahaan}</p>
                 </div>
             </header>
 
-            <p className="text-xs text-gray-600 mb-3 line-clamp-3">
+            {/* <p className="text-xs text-gray-600 mb-3 line-clamp-3">
                 {vacancy.deskripsi_posisi}
-            </p>
+            </p> */}
+            <HoverCard>
+                <HoverCardTrigger asChild>
+                    <p className="text-xs text-gray-600 mb-3 line-clamp-3 cursor-help">
+                        {vacancy.deskripsi_posisi}
+                    </p>
+                </HoverCardTrigger>
+                <HoverCardContent className="max-w-xl p-4 max-h-96 overflow-y-auto">
+                    <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                        {vacancy.deskripsi_posisi}
+                    </div>
+                </HoverCardContent>
+            </HoverCard>
 
             <div className="text-xs text-gray-500 space-y-1 flex-1">
                 <div><b>Kuota:</b> {vacancy.jumlah_kuota ?? "-"}</div>
@@ -49,9 +80,9 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
 
             {programList.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                    {programList.slice(0, 4).map((p) => (
+                    {programList.slice(0, 4).map((p, idx) => (
                         <span
-                            key={p.value}
+                            key={idx}
                             className="text-[11px] px-2 py-1 bg-slate-100 rounded"
                         >
                             {p.title}
@@ -71,7 +102,9 @@ const VacancyCard: React.FC<Props> = ({ vacancy }) => {
                 </Button>
             </div>
             <div className="pt-3 flex justify-end">
-                <Badge variant={"outline"} className="text-xs bg-green-600 text-white font-bold">Chance : {vacancy.jumlah_kuota && vacancy.jumlah_terdaftar ? `${(vacancy.jumlah_kuota / vacancy.jumlah_terdaftar * 100).toFixed(2)}%` : "-"}</Badge>
+                <Badge variant={"outline"} className="text-xs bg-green-600 text-white font-bold">
+                    Chance : {vacancy.jumlah_kuota && vacancy.jumlah_terdaftar ? `${(vacancy.jumlah_kuota / vacancy.jumlah_terdaftar * 100).toFixed(2)}%` : "-"}
+                </Badge>
             </div>
         </article>
     );

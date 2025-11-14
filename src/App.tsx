@@ -1,35 +1,68 @@
 import { useEffect, useMemo, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import type { Filters, Vacancy } from "./types/vacancy";
 import FilterSidebar from "./components/FilterSidebar";
 import VacancyList from "./components/VacancyList";
 import { parseProgramStudi } from "./utils/parse";
 import { Button } from "./components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import StatistikDiterima from "./components/statistikDiterima";
+import Favorites from "./pages/Favorites";
+import { useNavigate } from "react-router-dom";
+import { useFavorites } from "./contexts/FavoritesContext";
+import JsonCompressor from "./pages/Compress";
+import { decompressJson } from "./utils/decompress";
 
-const ITEMS_PER_PAGE = 21; // Jumlah item per halaman
+const ITEMS_PER_PAGE = 21;
 
-const App = () => {
+const HomePage = () => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<Filters>({
     q: "",
-    province: "",
-    company: "",
-    program: "",
-    kota: "",
+    province: [],
+    company: [],
+    program: [],
+    kota: [],
     sortBy: "",
   });
+  const navigate = useNavigate();
+  const { favorites } = useFavorites();
 
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch("/vacancies-aktif.json");
         const json = await res.json();
-        setVacancies(json.data || []);
+
+        console.log('Raw JSON:', json);
+
+        // Decompress data jika terkompresi
+        const decompressed = decompressJson(json);
+
+        console.log('Decompressed:', decompressed);
+        console.log('Decompressed.data:', decompressed.data);
+
+        // Data sekarang ada di decompressed.data (bukan array langsung)
+        const dataArray = Array.isArray(decompressed.data) 
+          ? decompressed.data 
+          : (decompressed.data ? Object.values(decompressed.data)[0] : []);
+
+        console.log('Data array:', dataArray);
+        console.log('Data array length:', dataArray.length);
+
+        const uniqueVacancies = Array.from(
+          new Map(
+            dataArray.map((item: Vacancy) => [item.id_posisi, item])
+          ).values()
+        ) as Vacancy[];
+
+        console.log('After removing duplicates:', uniqueVacancies.length);
+
+        setVacancies(uniqueVacancies);
       } catch (e) {
-        console.error(e);
+        console.error('Error loading data:', e);
       } finally {
         setLoading(false);
       }
@@ -37,26 +70,37 @@ const App = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    let result = vacancies.filter((v) => {
+    const result = vacancies.filter((v) => {
       const q = filters.q.toLowerCase();
       const programs = parseProgramStudi(v.program_studi).map((p) =>
         p.title.toLowerCase()
       );
 
+      // Search query
       if (
         q &&
         !v.posisi.toLowerCase().includes(q) &&
         !v.perusahaan?.nama_perusahaan?.toLowerCase().includes(q)
       )
         return false;
-      if (filters.province && v.perusahaan?.nama_provinsi !== filters.province)
+
+      // Multi-select filters
+      if (filters.province.length > 0 && !filters.province.includes(v.perusahaan?.nama_provinsi || ""))
         return false;
-      if (filters.kota && v.perusahaan?.nama_kabupaten !== filters.kota)
+
+      if (filters.kota.length > 0 && !filters.kota.includes(v.perusahaan?.nama_kabupaten || ""))
         return false;
-      if (filters.company && v.perusahaan?.nama_perusahaan !== filters.company)
+
+      if (filters.company.length > 0 && !filters.company.includes(v.perusahaan?.nama_perusahaan || ""))
         return false;
-      if (filters.program && !programs.includes(filters.program.toLowerCase()))
-        return false;
+
+      if (filters.program.length > 0) {
+        const hasMatchingProgram = filters.program.some(selectedProgram =>
+          programs.includes(selectedProgram.toLowerCase())
+        );
+        if (!hasMatchingProgram) return false;
+      }
+
       return true;
     });
     if (filters.sortBy === "jumlah_terdaftar_asc") {
@@ -96,17 +140,28 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white shadow-sm sticky top-0">
+      <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold">Lowongan</h1>
-          <div className="text-sm text-black/50">
-            <p>Update data : 2025/10/15 22.01</p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/favorites")}
+              className="flex items-center gap-2"
+            >
+              <Heart className="h-4 w-4" />
+              Favorit ({favorites.length})
+            </Button>
+            <div className="text-sm text-black/50">
+              <p>Update data : 2025/11/14 12.25</p>
+            </div>
           </div>
         </div>
       </header>
 
       <StatistikDiterima />
-      
+
       <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
         <FilterSidebar
           vacancies={vacancies}
@@ -129,7 +184,7 @@ const App = () => {
               <VacancyList items={paginatedItems} />
 
               {/* Pagination Controls */}
-              <div className="mt-6 flex items-center justify-between">
+              <div className="z-10 mt-6 flex items-center justify-between sticky bottom-4 bg-white rounded-2xl border shadow-md p-4">
                 <div className="text-sm text-slate-600">
                   Halaman {currentPage} dari {totalPages}
                 </div>
@@ -159,6 +214,16 @@ const App = () => {
         </section>
       </main>
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/favorites" element={<Favorites />} />
+      <Route path="/compress" element={<JsonCompressor />} />
+    </Routes>
   );
 };
 
