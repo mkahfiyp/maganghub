@@ -154,7 +154,7 @@ const HomePage = () => {
               Favorit ({favorites.length})
             </Button>
             <div className="text-sm text-black/50">
-              <p>Update data : 2025/11/14 12.25</p>
+              <p>Update data : 2025/11/14 23.47</p>
             </div>
           </div>
         </div>
