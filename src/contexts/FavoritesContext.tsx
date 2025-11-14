@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 interface FavoritesContextType {
   favorites: string[];
   addFavorite: (id: string) => void;
   removeFavorite: (id: string) => void;
+  toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
 }
 
@@ -28,10 +29,16 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     setFavorites((prev) => prev.filter((fav) => fav !== id));
   };
 
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
+    );
+  };
+
   const isFavorite = (id: string) => favorites.includes(id);
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
+    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, toggleFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
