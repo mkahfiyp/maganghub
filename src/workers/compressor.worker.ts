@@ -1,3 +1,5 @@
+type CompressionMode = 'standard' | 'aggressive';
+
 interface CompressionResult {
     compressed: string;
     stats: {
